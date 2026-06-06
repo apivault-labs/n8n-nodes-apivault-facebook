@@ -1,0 +1,54 @@
+{
+  "name": "n8n-nodes-apivault-facebook",
+  "version": "0.1.0",
+  "description": "n8n community node for Facebook Profile Scraper — real-time, no login. Scrape public Facebook profiles and pages: name, bio, followers, likes, public emails, public phones, websites, verification badge, page category and a 0-100 activity score. Multi-strategy fallback, residential proxy. Pay-as-you-go, no monthly fee.",
+  "license": "MIT",
+  "homepage": "https://apify.com/apivault_labs/facebook-profile-scraper",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "facebook-scraper",
+    "facebook-profile",
+    "social-media-scraper",
+    "lead-generation",
+    "b2b-prospecting",
+    "no-login",
+    "contact-enrichment",
+    "marketing",
+    "apify"
+  ],
+  "author": {
+    "name": "apivault_labs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apivault-labs/n8n-nodes-apivault-facebook.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && copyfiles \"nodes/**/*.svg\" dist",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ApifyApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Facebook/Facebook.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "copyfiles": "^2.4.1",
+    "n8n-workflow": "*",
+    "typescript": "^5.4.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
