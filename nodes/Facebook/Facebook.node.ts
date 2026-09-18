@@ -13,16 +13,16 @@ const ACTOR_ID = 'apivault_labs~facebook-profile-scraper';
 
 export class Facebook implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Facebook Page Scraper',
+		displayName: 'Facebook Profile & Posts Scraper',
 		name: 'facebook',
 		icon: 'file:facebook.svg',
 		group: ['transform'],
 		version: 1,
-		subtitle: '={{$parameter["profileUrls"] || $parameter["searchKeywords"]}}',
+		subtitle: '={{$parameter["mode"]}}',
 		description:
-			'Scrape public Facebook pages and profiles in real time, no login: name, category, followers, emails, phones, website, verification badge, activity score, best contact, and (optional) recent posts. Find pages by keyword or by URL.',
+			'Scrape public Facebook profiles, pages and recent posts in bulk without login. Use URLs, Facebook IDs or keyword discovery; return contacts, audience data and post engagement.',
 		defaults: {
-			name: 'Facebook Page Scraper',
+			name: 'Facebook Profile & Posts Scraper',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
@@ -34,6 +34,18 @@ export class Facebook implements INodeType {
 			},
 		],
 		properties: [
+			{
+				displayName: 'Mode',
+				name: 'mode',
+				type: 'options',
+				options: [
+					{ name: 'Profiles / Pages', value: 'profiles' },
+					{ name: 'Profiles / Pages + Recent Posts', value: 'profilesAndPosts' },
+					{ name: 'Search by Keyword', value: 'search' },
+				],
+				default: 'profiles',
+				description: 'Choose the primary Facebook data workflow',
+			},
 			{
 				displayName: 'Facebook Profile / Page URLs',
 				name: 'profileUrls',
@@ -76,7 +88,7 @@ export class Facebook implements INodeType {
 						type: 'boolean',
 						default: false,
 						description:
-							'Whether to also pull the page\'s recent public posts (text, reactions/comments/shares, photos, videos with MP4 URLs). Emitted as extra rows with type=post. Billed per post.',
+							'Whether to also pull recent public posts (text, permalink, publication time, reactions, comments and shares when exposed). Emitted as extra rows with type=post. Billed per post.',
 					},
 					{
 						displayName: 'Max Posts per Page',
@@ -85,6 +97,20 @@ export class Facebook implements INodeType {
 						typeOptions: { minValue: 1, maxValue: 500 },
 						default: 25,
 						description: 'Cap on posts saved per page when scraping posts is on',
+					},
+					{
+						displayName: 'Posts From Date',
+						name: 'postsSince',
+						type: 'dateTime',
+						default: '',
+						description: 'Inclusive start date for posts. Takes precedence over the relative-days filter.',
+					},
+					{
+						displayName: 'Posts Until Date',
+						name: 'postsUntil',
+						type: 'dateTime',
+						default: '',
+						description: 'Inclusive end date for posts',
 					},
 					{
 						displayName: 'Posts: Only Last N Days',
@@ -212,6 +238,7 @@ export class Facebook implements INodeType {
 				const profileUrls = splitList(this.getNodeParameter('profileUrls', i, '') as string);
 				const searchKeywords = splitList(this.getNodeParameter('searchKeywords', i, '') as string);
 				const searchLocation = (this.getNodeParameter('searchLocation', i, '') as string).trim();
+				const mode = this.getNodeParameter('mode', i, 'profiles') as string;
 
 				if (profileUrls.length === 0 && searchKeywords.length === 0) {
 					throw new NodeOperationError(
@@ -224,6 +251,8 @@ export class Facebook implements INodeType {
 				const postOptions = this.getNodeParameter('postOptions', i, {}) as {
 					scrapePosts?: boolean;
 					maxPosts?: number;
+					postsSince?: string;
+					postsUntil?: string;
 					sinceDays?: number;
 					postKeyword?: string;
 				};
@@ -242,13 +271,14 @@ export class Facebook implements INodeType {
 				};
 
 				const body: Record<string, unknown> = {
+					mode,
 					maxConcurrency: advanced.maxConcurrency ?? 15,
 					timeout: advanced.timeout ?? 20,
 					maxRetries: advanced.maxRetries ?? 2,
 					dedupe: advanced.dedupe ?? true,
 					fastMode: advanced.fastMode ?? false,
 					enrichEmailViaGoogle: contactOptions.enrichEmailViaGoogle ?? true,
-					scrapePosts: postOptions.scrapePosts ?? false,
+					scrapePosts: mode === 'profilesAndPosts' || (postOptions.scrapePosts ?? false),
 				};
 
 				if (profileUrls.length > 0) body.profileUrls = profileUrls;
@@ -260,7 +290,9 @@ export class Facebook implements INodeType {
 
 				if (body.scrapePosts) {
 					body.maxPosts = postOptions.maxPosts ?? 25;
-					if (postOptions.sinceDays) body.sinceDays = postOptions.sinceDays;
+					if (postOptions.postsSince) body.postsSince = postOptions.postsSince;
+					if (postOptions.postsUntil) body.postsUntil = postOptions.postsUntil;
+					if (!postOptions.postsSince && postOptions.sinceDays) body.sinceDays = postOptions.sinceDays;
 					if (postOptions.postKeyword) body.postKeyword = postOptions.postKeyword.trim();
 				}
 
