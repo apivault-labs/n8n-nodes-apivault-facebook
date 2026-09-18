@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0
+
+- Renamed the node to **Facebook Profile & Posts Scraper**.
+- Added a clear Profile / Profile + Posts / Search mode selector.
+- Added exact inclusive post date filters (`postsSince`, `postsUntil`) while
+  preserving the existing relative `sinceDays` option.
+- Aligned the request contract with Actor version 2.2 and its typed profile/post
+  output.
+
 ## 0.2.0
 
 Brought the node up to date with the current Facebook Page Scraper actor.
