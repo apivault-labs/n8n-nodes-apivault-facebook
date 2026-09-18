@@ -1,6 +1,6 @@
 # n8n-nodes-apivault-facebook
 
-An [n8n](https://n8n.io) community node for the **Facebook Page Scraper** — real-time data on public Facebook pages and profiles, no login.
+An [n8n](https://n8n.io) community node for the **Facebook Profile & Posts Scraper** — bulk public profile/page data, recent posts and keyword discovery with no Facebook login.
 
 No login. Pay-as-you-go, no monthly subscription. The scraping runs server-side on [Apify](https://www.apify.com?fpr=06e5d2); this node is a thin connector you drive with your own Apify API token.
 
@@ -14,14 +14,15 @@ Built by **[apivault_labs](https://apify.com/apivault_labs)** — see [all our a
 - **Lead intelligence**: 0-100 activity score with plain-English reasons and tier (small / growing / established / major)
 - **Engagement**: last post date, days since last post, average reactions/shares/video views, engagement rate (best-effort, when the page exposes it)
 - **Cross-platform links**: Instagram handle + URL, Messenger link, WhatsApp link (when a phone is present), and 1-click search links for other networks
-- **Optional posts**: recent public posts (text, reactions/comments/shares, photos, videos with MP4 URLs) as extra rows with `type=post`
+- **Optional posts**: recent public posts (text, permalink, publication time and reactions/comments/shares when exposed) as extra rows with `type=post`
 
 Public data only — the scraper never logs in.
 
-## Two ways to find pages
+## Three modes
 
-- **By URL** — paste one or more public profile/page URLs (supports `/username/`, `/profile.php?id=...` and bare numeric IDs)
-- **By keyword** — enter keywords (e.g. `dentist miami`) plus an optional location, and the actor discovers matching public pages and scrapes each
+- **Profiles / Pages** — paste one or more public URLs or IDs.
+- **Profiles / Pages + Recent Posts** — return profiles and post rows with optional exact `From` / `Until` dates.
+- **Search by Keyword** — discover matching pages using keywords and an optional location.
 
 ## Installation
 
@@ -46,7 +47,7 @@ A free Apify account includes monthly usage credits.
 
 - **Facebook Profile / Page URLs** — one or more public URLs (one per line, or comma-separated). Leave empty if using keywords.
 - **Search Keywords** / **Search Location** — discover pages by keyword instead of URL
-- **Posts** — optionally scrape recent posts, with max-count, recency and keyword filters
+- **Posts** — optionally scrape recent posts with max-count, exact date range, relative recency and keyword filters
 - **Contact Enrichment** — website email fallback + optional email-domain filter
 - **Advanced** — concurrency, timeout, retries, deduplication, fast mode, per-keyword result cap, real-time webhook URL
 
