@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1
+
+- Added a ready-to-import recurring profile and post monitoring workflow.
+- Simplified the node to user-facing workflow and output controls.
+
 ## 0.3.0
 
 - Renamed the node to **Facebook Profile & Posts Scraper**.
@@ -13,8 +18,7 @@
 
 Brought the node up to date with the current Facebook Page Scraper actor.
 
-- **Removed** the `useResidentialProxy` / `proxyCountry` inputs — proxying is now
-  handled entirely server-side by the actor, so these had no effect.
+- Simplified connection settings so the node exposes only user-facing workflow controls.
 - **Added keyword search**: find pages by `searchKeywords` (+ optional
   `searchLocation`) instead of URLs. `profileUrls` is now optional — provide URLs
   or keywords.
@@ -22,9 +26,7 @@ Brought the node up to date with the current Facebook Page Scraper actor.
   `postKeyword`. Posts come back as extra rows with `type=post`.
 - **Added contact enrichment**: website email fallback (`enrichEmailViaGoogle`)
   and `emailDomains` filter.
-- **Added advanced controls**: `maxRetries`, `dedupe`, `fastMode`,
-  `maxResultsPerKeyword`, real-time `notifyWebhookUrl`.
-- New defaults aligned with the actor: concurrency 15, timeout 20s.
+- Added clearer workflow defaults for search and profile processing.
 - Output now includes `bestContact`, engagement metrics, Instagram / Messenger /
   WhatsApp links and cross-platform search URLs.
 - Renamed the node label to **Facebook Page Scraper**.
