@@ -76,6 +76,13 @@ Only **public** page/profile data is returned. The scraper does not log in and d
 
 [MIT](LICENSE)
 
+## Ready-to-import workflow
+
+The package includes `examples/quickstart-workflow.json`: a recurring public
+profile and recent-post monitor with normalized output for a CRM, sheet or alert
+workflow. Import it into n8n, select your Apify credential and replace the sample
+Page URL. The workflow is inactive by default and contains no credentials.
+
 ## Keywords
 
 `facebook-scraper` `facebook-profile` `facebook-page` `social-media-scraper` `lead-generation` `b2b-prospecting` `no-login` `contact-enrichment` `marketing` `n8n` `apify`
