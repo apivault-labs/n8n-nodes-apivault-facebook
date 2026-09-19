@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-apivault-facebook",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "n8n community node for Facebook Profile & Posts Scraper — no login, bulk URL/ID scraping, exact post date filters, keyword discovery, public contacts and engagement data.",
   "license": "MIT",
   "homepage": "https://apify.com/apivault_labs/facebook-profile-scraper",
@@ -32,7 +32,8 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "examples"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
