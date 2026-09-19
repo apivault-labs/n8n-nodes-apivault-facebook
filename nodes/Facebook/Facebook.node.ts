@@ -155,71 +155,6 @@ export class Facebook implements INodeType {
 					},
 				],
 			},
-			{
-				displayName: 'Advanced Options',
-				name: 'advancedOptions',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				options: [
-					{
-						displayName: 'Max Concurrency',
-						name: 'maxConcurrency',
-						type: 'number',
-						typeOptions: { minValue: 1, maxValue: 30 },
-						default: 15,
-						description: 'How many pages to scrape in parallel. 15-20 is safe.',
-					},
-					{
-						displayName: 'Timeout per Profile (Seconds)',
-						name: 'timeout',
-						type: 'number',
-						typeOptions: { minValue: 10, maxValue: 60 },
-						default: 20,
-						description: 'Maximum time to wait for each profile',
-					},
-					{
-						displayName: 'Max Retries per Profile',
-						name: 'maxRetries',
-						type: 'number',
-						typeOptions: { minValue: 0, maxValue: 8 },
-						default: 2,
-						description: 'How many times to retry a failed or blocked profile, each with a fresh IP',
-					},
-					{
-						displayName: 'Deduplicate',
-						name: 'dedupe',
-						type: 'boolean',
-						default: true,
-						description:
-							'Whether to drop duplicate input URLs and duplicate output pages (same Facebook ID) so a page is never scraped or billed twice',
-					},
-					{
-						displayName: 'Fast Mode',
-						name: 'fastMode',
-						type: 'boolean',
-						default: false,
-						description:
-							'Whether to read less data for speed. Gets name, followers, likes, phone, website, verified. May miss category/rating for some pages.',
-					},
-					{
-						displayName: 'Max Profiles per Keyword',
-						name: 'maxResultsPerKeyword',
-						type: 'number',
-						typeOptions: { minValue: 1, maxValue: 100 },
-						default: 20,
-						description: 'How many Facebook pages to discover per keyword. Only used with Search Keywords.',
-					},
-					{
-						displayName: 'Real-Time Webhook URL',
-						name: 'notifyWebhookUrl',
-						type: 'string',
-						default: '',
-						description:
-							'Each scraped page is POSTed as JSON to this URL the moment it is found (Zapier / Make / n8n / Slack / Discord)',
-					},
-				],
-			},
 		],
 	};
 
@@ -260,23 +195,8 @@ export class Facebook implements INodeType {
 					enrichEmailViaGoogle?: boolean;
 					emailDomains?: string;
 				};
-				const advanced = this.getNodeParameter('advancedOptions', i, {}) as {
-					maxConcurrency?: number;
-					timeout?: number;
-					maxRetries?: number;
-					dedupe?: boolean;
-					fastMode?: boolean;
-					maxResultsPerKeyword?: number;
-					notifyWebhookUrl?: string;
-				};
-
 				const body: Record<string, unknown> = {
 					mode,
-					maxConcurrency: advanced.maxConcurrency ?? 15,
-					timeout: advanced.timeout ?? 20,
-					maxRetries: advanced.maxRetries ?? 2,
-					dedupe: advanced.dedupe ?? true,
-					fastMode: advanced.fastMode ?? false,
 					enrichEmailViaGoogle: contactOptions.enrichEmailViaGoogle ?? true,
 					scrapePosts: mode === 'profilesAndPosts' || (postOptions.scrapePosts ?? false),
 				};
@@ -285,7 +205,6 @@ export class Facebook implements INodeType {
 				if (searchKeywords.length > 0) {
 					body.searchKeywords = searchKeywords;
 					if (searchLocation) body.searchLocation = searchLocation;
-					body.maxResultsPerKeyword = advanced.maxResultsPerKeyword ?? 20;
 				}
 
 				if (body.scrapePosts) {
@@ -298,8 +217,6 @@ export class Facebook implements INodeType {
 
 				const emailDomains = splitList(contactOptions.emailDomains ?? '');
 				if (emailDomains.length > 0) body.emailDomains = emailDomains;
-
-				if (advanced.notifyWebhookUrl) body.notifyWebhookUrl = advanced.notifyWebhookUrl.trim();
 
 				const options: IRequestOptions = {
 					method: 'POST' as IHttpRequestMethods,
