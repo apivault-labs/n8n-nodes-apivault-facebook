@@ -1,0 +1,101 @@
+{
+  "id": "ca6a1284-c91c-5edc-96f0-942a3c70f96b",
+  "name": "Facebook Profiles → Recurring content monitor",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7e044bcb-3fce-57d6-beba-2a60343cbaa1",
+      "name": "When clicking Execute workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Setup\n1. Select your Apify API credential.\n2. Replace the sample public Page URL.\n3. Run once, then replace the manual trigger with Schedule Trigger for recurring monitoring.\n4. Send the final summary to your CRM, sheet or alert channel.",
+        "height": 300,
+        "width": 460
+      },
+      "id": "5331233b-5f64-5c02-8a70-032973934a2a",
+      "name": "How to use this workflow",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "profilesAndPosts",
+        "profileUrls": "https://www.facebook.com/NASA",
+        "searchKeywords": "",
+        "searchLocation": "",
+        "postOptions": {
+          "scrapePosts": true,
+          "maxPosts": 25,
+          "sinceDays": 30
+        },
+        "contactOptions": {
+          "enrichEmailViaGoogle": true
+        }
+      },
+      "id": "bafa8949-febc-5afa-9615-4d488036ad7c",
+      "name": "Collect profiles and posts with Apify",
+      "type": "n8n-nodes-apivault-facebook.facebook",
+      "typeVersion": 1,
+      "position": [
+        260,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const j = $json; const kind = j.type ?? (j.postUrl || j.permalink ? 'post' : 'profile'); const profileUrl = j.profileUrl ?? j.facebookUrl ?? j.url ?? ''; const postUrl = j.postUrl ?? j.permalink ?? ''; return { json: { ...j, recordType: kind, monitoredProfile: profileUrl, contentUrl: postUrl, engagementTotal: Number(j.reactions ?? j.reactionCount ?? 0) + Number(j.comments ?? j.commentCount ?? 0) + Number(j.shares ?? j.shareCount ?? 0), observedAt: new Date().toISOString() } };"
+      },
+      "id": "15ef565c-da6b-5147-a2cc-9956a41b0e12",
+      "name": "Build profile and post summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        120
+      ]
+    }
+  ],
+  "connections": {
+    "When clicking Execute workflow": {
+      "main": [
+        [
+          {
+            "node": "Collect profiles and posts with Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect profiles and posts with Apify": {
+      "main": [
+        [
+          {
+            "node": "Build profile and post summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "versionId": "74644f23-0e1f-5bd3-9824-3aa4192f8eb0",
+  "tags": []
+}
